@@ -1,6 +1,11 @@
 package com.controller;
 
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dao.UserRegDao;
+import com.dao.UserRegRepository;
 import com.dto.LoginResponse;
 import com.model.UserLogin;
 import com.model.UserReg;
@@ -51,6 +57,24 @@ public class UserRegController {
 	        return result;
 	    }
 	}
+	
+	@Autowired
+    private UserRegRepository userRegRepository;
+	@PutMapping("/updateBio")
+    public ResponseEntity<String> updateBio(@RequestBody Map<String, String> body) {
+        String username = body.get("username");
+        String bio = body.get("bio");
+
+        Optional<UserReg> userOptional = userRegRepository.findByName(username);
+        if (userOptional.isPresent()) {
+            UserReg user = userOptional.get();
+            user.setBio(bio);
+            userRegRepository.save(user);
+            return ResponseEntity.ok("Bio updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
 	
 	
 }
