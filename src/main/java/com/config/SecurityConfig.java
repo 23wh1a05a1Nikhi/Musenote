@@ -43,7 +43,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
             	    .requestMatchers("/UsersLogin", "/addUser").permitAll()
-            	    .requestMatchers("/addPost", "/getAllPosts", "/getUserByName/").authenticated()
+            	    .requestMatchers("/addPost", "/getAllPosts", "/getUserByName/", "/getPostById/").authenticated()
             	    .anyRequest().authenticated()
             	)
             .sessionManagement(sess -> sess
