@@ -11,6 +11,9 @@ import com.model.LyricPost;
 @Repository
 public interface LyricPostRepository extends JpaRepository<LyricPost,Integer>{
 
+	@Query("from LyricPost where post_id = :postID")
+	LyricPost getByID(@Param("postID") int postID);
+	
 	@Query("from LyricPost where tag1 = :tagName or tag2 = :tagName")
 	List<LyricPost> getByTag(@Param("tagName") String tagName);
 	

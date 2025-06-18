@@ -55,8 +55,13 @@ public class LyricPostController {
 		return postDao.getAllPosts();
 	}
 	
+	@GetMapping("getPostById/{postID}")
+	public LyricPost getPostByID(@PathVariable("postID") int postID) {
+		return postDao.getPostByID(postID);
+	}
+	
 	@GetMapping("getPostsByTags/{tag}")
-	public List<LyricPost> getPostsByTags(@PathVariable("tag") String tagName){
+	public List<LyricPost> getPostsByTags(@PathVariable("tag") String tagName) {
 		return postDao.getPostsByTags(tagName);
 	}
 	
@@ -64,6 +69,7 @@ public class LyricPostController {
 	public List<LyricPost> getPostsByGenre(@PathVariable("genre") String gnName){
 		return postDao.getPostsByGenre(gnName);
 	}
+	
 	
 	@GetMapping("getPostsByUser/{userName}")
 	public List<LyricPost> getPostsByUser(@PathVariable("userName") String userName){

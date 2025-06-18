@@ -15,7 +15,11 @@ public class LyricPostDao {
 	public LyricPost addPost(LyricPost post) {
 		return postRepo.save(post);
 	}
-
+	
+	public LyricPost getPostByID(int postID) {
+		return postRepo.getByID(postID);
+	}
+	
 	public List<LyricPost> getAllPosts() {
 		return postRepo.findAll();
 	}
