@@ -10,13 +10,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dao.UserRegDao;
+import com.dto.LoginResponse;
 import com.model.UserLogin;
 import com.model.UserReg;
+import com.util.JwtUtil;
 @CrossOrigin("http://localhost:3000")
 @RestController
 public class UserRegController {
 	@Autowired
 	UserRegDao userDao;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
 	
 	@PostMapping("addUser")
 	public UserReg addUser(@RequestBody UserReg user) {
@@ -33,9 +38,19 @@ public class UserRegController {
 		return userDao.addFollowing(user);
 	}
 	
+	
+	
 	@PostMapping("UsersLogin")
-	public String UsersLogin(@RequestBody UserLogin user) {
-		return userDao.UsersLogin(user.getUserName(), user.getPassword());
-		
+	public Object UsersLogin(@RequestBody UserLogin user) {
+	    String result = userDao.UsersLogin(user.getUserName(), user.getPassword());
+
+	    if (result.equals("Valid")) {
+	        String token = jwtUtil.generateToken(user.getUserName());
+	        return new LoginResponse(token, user.getUserName());
+	    } else {
+	        return result;
+	    }
 	}
+	
+	
 }

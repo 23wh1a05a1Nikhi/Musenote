@@ -23,6 +23,7 @@ public class LyricPostController {
 		return postDao.addPost(post);
 	}
 	
+	
 	@GetMapping("getAllPosts")
 	public List<LyricPost> getAllPosts(){
 		return postDao.getAllPosts();
