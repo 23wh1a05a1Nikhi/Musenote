@@ -42,7 +42,7 @@ public class SecurityConfig {
 	        .cors(withDefaults())
 	        .csrf(csrf -> csrf.disable())
 	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/UsersLogin", "/addUser").permitAll()
+	            .requestMatchers("/UsersLogin", "/addUser", "/getPostsByGenre/**", "/getPostsByTags/**", "/getPostsByUser/**", "/getPostsByTitle/**").permitAll()
 	            .requestMatchers("/addPost", "/getAllPosts", "/getUserByName/**", "/getPostById/**").authenticated()
 	            .requestMatchers("/likePost/**").authenticated()  // ✅ Add this line to allow likes
 	            .anyRequest().authenticated()

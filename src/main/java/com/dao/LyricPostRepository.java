@@ -21,4 +21,8 @@ public interface LyricPostRepository extends JpaRepository<LyricPost,Integer>{
 	
 	@Query("from LyricPost where userreg.userName = :userName")
 	List<LyricPost> getByUser(@Param("userName") String userName);
+	
+	@Query("from LyricPost where lower(title) like lower(concat('%', :title, '%'))")
+	List<LyricPost> getByTitle(@Param("title") String title);
+
 }

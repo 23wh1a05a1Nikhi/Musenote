@@ -39,5 +39,8 @@ public class LyricPostDao {
 		return postRepo.getByUser(userName);
 	}
 	
-	
+	public List<LyricPost> getPostsByTitle(String title) {
+		return postRepo.getByTitle(title);
+	}
+
 }
