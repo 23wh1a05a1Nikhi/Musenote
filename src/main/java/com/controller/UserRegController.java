@@ -19,6 +19,7 @@ import com.dao.UserRegRepository;
 import com.dto.LoginResponse;
 import com.model.UserLogin;
 import com.model.UserReg;
+import com.service.EmailService;
 import com.util.JwtUtil;
 @CrossOrigin("http://localhost:3000")
 @RestController
@@ -29,10 +30,30 @@ public class UserRegController {
 	@Autowired
 	private JwtUtil jwtUtil;
 	
+	@Autowired
+	private EmailService emailService;
+	
 	@PostMapping("addUser")
-	public UserReg addUser(@RequestBody UserReg user) {
-		return userDao.addUser(user);
+	public ResponseEntity<?> addUser(@RequestBody UserReg user) {
+	    try {
+	        System.out.println("Received user:");
+	        System.out.println("Username: " + user.getUserName());
+	        System.out.println("Email: " + user.getMail());
+	        System.out.println("Password: " + user.getPassword());
+
+	        UserReg savedUser = userDao.addUser(user);
+
+	        emailService.sendWelcomeEmail(user.getMail(), user.getUserName());
+
+	        return ResponseEntity.ok(savedUser);
+	    } catch (Exception e) {
+	        e.printStackTrace(); // for full stack trace
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("Registration failed: " + e.getMessage());
+	    }
 	}
+
+
 	
 	@GetMapping("getUserByName/{name}")
 	public UserReg getUserByName(@PathVariable("name") String name) {
