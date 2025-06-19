@@ -1,5 +1,6 @@
 package com.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -16,6 +17,10 @@ public class LyricPost {
 	String genre;
 	String tag1;
 	String tag2;
+	
+	@Column(name = "likes")
+	Integer likes = 0;
+
 	
 	
 	@ManyToOne
@@ -77,6 +82,19 @@ public class LyricPost {
 	}
 	public void setUserreg(UserReg userreg) {
 		this.userreg = userreg;
+	}
+	public Integer getLikes() {
+	    return likes;
+	}
+	public void setLikes(Integer i) {
+		this.likes = i;
+	}
+	public void incrementLikes() {
+	    if (this.likes == null) {
+	        this.likes = 1;
+	    } else {
+	        this.likes += 1;
+	    }
 	}
 	
 	
