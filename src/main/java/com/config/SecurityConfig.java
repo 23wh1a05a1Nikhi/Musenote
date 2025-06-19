@@ -44,7 +44,7 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(auth -> auth
 	            .requestMatchers("/UsersLogin", "/addUser", "/getPostsByGenre/**", "/getPostsByTags/**", "/getPostsByUser/**", "/getPostsByTitle/**").permitAll()
 	            .requestMatchers("/addPost", "/getAllPosts", "/getUserByName/**", "/getPostById/**").authenticated()
-	            .requestMatchers("/likePost/**").authenticated()  // ✅ Add this line to allow likes
+	            .requestMatchers("/likePost/**",  "/follow", "/unfollow", "/isFollowing/**", "/followCount/**").authenticated()  
 	            .anyRequest().authenticated()
 	        )
 	        .sessionManagement(sess -> sess
