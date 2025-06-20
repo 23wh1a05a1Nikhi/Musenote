@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin("http://localhost:3000")
@@ -56,4 +57,15 @@ public class UserFollowController {
         response.put("message", "Unfollowed successfully");
         return response;
     }
+    
+    @GetMapping("/getFollowers/{username}")
+    public List<String> getFollowers(@PathVariable String username) {
+        return followDao.getFollowers(username);
+    }
+
+    @GetMapping("/getFollowing/{username}")
+    public List<String> getFollowing(@PathVariable String username) {
+        return followDao.getFollowing(username);
+    }
+
 }
