@@ -18,7 +18,7 @@ public class EmailService {
         message.setTo(toEmail);
         message.setSubject("Welcome to MuseNote!");
         message.setText("Hi " + username + ",\n\nThank you for registering with MuseNote! 🎶\nWe're excited to have you onboard.\n\nHappy posting!\n\n- MuseNote Team");
-        message.setFrom("xx@gmail.com");
+        message.setFrom("xxx@gmail.com");
 
         mailSender.send(message);
     }
