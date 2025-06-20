@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 
 import com.dao.LyricPostDao;
 import com.dao.LyricPostRepository;
@@ -178,4 +179,27 @@ public class LyricPostController {
 	            .body(resource);
 	}
 
+    @DeleteMapping("/deletePost/{postId}")
+    public ResponseEntity<String> deletePostById(
+            @PathVariable Integer postId,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            String username = jwtUtil.extractUsername(token);
+            Optional<LyricPost> optionalPost = postRepo.findById(postId);
+            if (optionalPost.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
+            }
+            LyricPost post = optionalPost.get();
+            if (!post.getUserreg().getUserName().equals(username)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("You can only delete your own posts");
+            }
+            postRepo.deleteById(postId);
+            return ResponseEntity.ok("Post deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error deleting post: " + e.getMessage());
+        }
+    }
 }
