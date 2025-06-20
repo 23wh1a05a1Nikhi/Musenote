@@ -54,31 +54,39 @@ public class LyricPostController {
     }
 
     @PostMapping("/likePost/{postId}")
-    public ResponseEntity<String> likePost(
+    public ResponseEntity<String> toggleLikePost(
             @PathVariable Integer postId,
             @RequestHeader("Authorization") String authHeader) {
         try {
             String token = authHeader.replace("Bearer ", "");
             String username = jwtUtil.extractUsername(token);
-            if (likeRepo.existsByUsernameAndPostId(username, postId)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("User already liked this post");
-            }
+
             Optional<LyricPost> optPost = postRepo.findById(postId);
             if (optPost.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
             }
+
             LyricPost post = optPost.get();
-            post.setLikes((post.getLikes() == null ? 0 : post.getLikes()) + 1);
-            postRepo.save(post);
-            PostLike like = new PostLike(username, postId);
-            likeRepo.save(like);
-            return ResponseEntity.ok("Post liked");
+
+            if (likeRepo.existsByUsernameAndPostId(username, postId)) {
+                likeRepo.deleteByUsernameAndPostId(username, postId);
+                post.setLikes(Math.max((post.getLikes() == null ? 1 : post.getLikes()) - 1, 0));
+                postRepo.save(post);
+                return ResponseEntity.ok("Post unliked");
+            } 
+            else {
+                PostLike like = new PostLike(username, postId);
+                likeRepo.save(like);
+                post.setLikes((post.getLikes() == null ? 0 : post.getLikes()) + 1);
+                postRepo.save(post);
+                return ResponseEntity.ok("Post liked");
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error liking post: " + e.getMessage());
+                    .body("Error toggling like: " + e.getMessage());
         }
     }
+
 
     @DeleteMapping("/deletePost/{postId}")
     public ResponseEntity<String> deletePostById(
@@ -133,4 +141,15 @@ public class LyricPostController {
     public List<LyricPost> getPostsByTitle(@PathVariable("title") String title) {
         return postDao.getPostsByTitle(title);
     }
+    
+    @GetMapping("/isPostLiked/{postId}")
+    public ResponseEntity<Boolean> isPostLiked(
+            @PathVariable Integer postId,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        String username = jwtUtil.extractUsername(token);
+        boolean liked = likeRepo.existsByUsernameAndPostId(username, postId);
+        return ResponseEntity.ok(liked);
+    }
+
 }
