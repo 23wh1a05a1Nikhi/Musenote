@@ -32,8 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     	    return;
     	}
     	String path = request.getRequestURI();
-    	if (path.equals("/UsersLogin") || path.equals("/addUser") || 
-    	    path.startsWith("/getPostsBy") || path.startsWith("/getPostById")) {
+    	if (path.equals("/UsersLogin") || path.equals("/addUser")) {
     	    chain.doFilter(request, response); // Skip JWT validation
     	    return;
     	}
