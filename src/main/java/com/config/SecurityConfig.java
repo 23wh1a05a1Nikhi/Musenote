@@ -42,9 +42,9 @@ public class SecurityConfig {
 	        .cors(withDefaults())
 	        .csrf(csrf -> csrf.disable())
 	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/UsersLogin", "/addUser", "/getPostsByGenre/**", "/getPostsByTags/**", "/getPostsByUser/**", "/getPostsByTitle/**").permitAll()
+	            .requestMatchers("/UsersLogin", "/addUser", "/getPostsByGenre/**", "/getPostsByTags/**", "/getPostsByUser/**", "/getPostsByTitle/**", "/audio/**").permitAll()
 	            .requestMatchers("/addPost", "/getAllPosts", "/getUserByName/**", "/getPostById/**").authenticated()
-	            .requestMatchers("/likePost/**",  "/follow", "/unfollow", "/isFollowing/**", "/followCount/**", "/addPostWithAudio", "/audio/**").authenticated()  
+	            .requestMatchers("/likePost/**",  "/follow", "/unfollow", "/isFollowing/**", "/followCount/**", "/addPostWithAudio").authenticated()  
 	            .anyRequest().authenticated()
 	        )
 	        .sessionManagement(sess -> sess
