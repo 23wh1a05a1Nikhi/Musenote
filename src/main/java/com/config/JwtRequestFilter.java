@@ -26,7 +26,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-
+    	if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+    	    response.setStatus(HttpServletResponse.SC_OK);
+    	    chain.doFilter(request, response); 
+    	    return;
+    	}
+    	String path = request.getRequestURI();
+    	if (path.equals("/UsersLogin") || path.equals("/addUser") || 
+    	    path.startsWith("/getPostsBy") || path.startsWith("/getPostById")) {
+    	    chain.doFilter(request, response); // Skip JWT validation
+    	    return;
+    	}
         final String authHeader = request.getHeader("Authorization");
 
         String username = null;

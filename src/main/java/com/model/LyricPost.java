@@ -27,10 +27,13 @@ public class LyricPost {
 	@JoinColumn(name = "userName")
 	UserReg userreg;
 	
+	@Column(nullable = true)
+	private String audioFileName;
+	
 	public LyricPost() {
 		
 	}
-	public LyricPost(int postId, String title, String content, String genre, String tag1, String tag2) {
+	public LyricPost(int postId, String title, String content, String genre, String tag1, String tag2, String audioFileName) {
 		super();
 		this.postId = postId;
 		this.title = title;
@@ -38,6 +41,7 @@ public class LyricPost {
 		this.genre = genre;
 		this.tag1 = tag1;
 		this.tag2 = tag2;
+		this.audioFileName = audioFileName;
 		
 	}
 	public int getPostId() {
@@ -96,7 +100,13 @@ public class LyricPost {
 	        this.likes += 1;
 	    }
 	}
-	
+	public String getAudioFileName() {
+	    return audioFileName;
+	}
+
+	public void setAudioFileName(String audioFileName) {
+	    this.audioFileName = audioFileName;
+	}
 	
 	
 	
