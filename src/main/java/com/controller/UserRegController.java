@@ -6,14 +6,20 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dao.LyricPostRepository;
+import com.dao.PostLikeRepository;
+import com.dao.UserFollowRepository;
 import com.dao.UserRegDao;
 import com.dao.UserRegRepository;
 import com.dto.LoginResponse;
@@ -32,6 +38,16 @@ public class UserRegController {
 	
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private PostLikeRepository postLikeRepository;
+
+	@Autowired
+	private UserFollowRepository userFollowRepository;
+
+	@Autowired
+	private LyricPostRepository lyricPostRepository;
+
 	
 	@PostMapping("addUser")
 	public ResponseEntity<?> addUser(@RequestBody UserReg user) {
@@ -97,5 +113,38 @@ public class UserRegController {
         }
     }
 	
-	
+	@DeleteMapping("/deleteAccount/{username}")
+	@Transactional
+	public ResponseEntity<String> deleteAccount(
+	        @PathVariable("username") String username,
+	        @RequestHeader("Authorization") String authHeader) {
+
+	    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid token.");
+	    }
+
+	    String token = authHeader.substring(7); // remove "Bearer "
+	    String tokenUsername;
+	    try {
+	        tokenUsername = jwtUtil.extractUsername(token);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
+	    }
+
+	    if (!tokenUsername.equals(username)) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized to delete this account.");
+	    }
+
+	    try {
+	        postLikeRepository.deleteByUsername(username);
+	        userFollowRepository.deleteAllUserFollows(username);
+	        lyricPostRepository.deleteByUserName(username);
+	        userRegRepository.deleteById(username);
+
+	        return ResponseEntity.ok("Account deleted successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during account deletion.");
+	    }
+	}	
 }

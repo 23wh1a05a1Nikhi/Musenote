@@ -3,8 +3,10 @@ package com.dao;
 import com.model.UserFollow;
 import com.model.UserFollowId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,4 +27,10 @@ public interface UserFollowRepository extends JpaRepository<UserFollow, UserFoll
     // Optional: get following list
     @Query("SELECT f.following FROM UserFollow f WHERE f.userRegUserName = :username")
     List<String> getFollowing(@Param("username") String username);
+    
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM UserFollow f WHERE f.userRegUserName = :username OR f.following = :username")
+    void deleteAllUserFollows(@Param("username") String username);
+
 }
