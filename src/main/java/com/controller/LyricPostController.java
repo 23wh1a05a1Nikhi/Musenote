@@ -77,37 +77,43 @@ public class LyricPostController {
 	
 	// ✅ Like a post
 	@PostMapping("/likePost/{postId}")
-	public ResponseEntity<String> likePost(
+	public ResponseEntity<String> toggleLikePost(
 	        @PathVariable Integer postId,
 	        @RequestHeader("Authorization") String authHeader) {
-	
+
 	    try {
 	        String token = authHeader.replace("Bearer ", "");
 	        String username = jwtUtil.extractUsername(token);
-	
-	        if (likeRepo.existsByUsernameAndPostId(username, postId)) {
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                    .body("User already liked this post");
-	        }
-	
+
 	        Optional<LyricPost> optPost = postRepo.findById(postId);
 	        if (optPost.isEmpty()) {
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
 	        }
-	
+
 	        LyricPost post = optPost.get();
-	        post.setLikes((post.getLikes() == null ? 0 : post.getLikes()) + 1);
-	        postRepo.save(post);
-	
-	        PostLike like = new PostLike(username, postId);
-	        likeRepo.save(like);
-	
-	        return ResponseEntity.ok("Post liked");
+
+	        // Check if the user already liked the post
+	        if (likeRepo.existsByUsernameAndPostId(username, postId)) {
+	            // Unlike
+	            likeRepo.deleteByUsernameAndPostId(username, postId);
+	            post.setLikes(Math.max((post.getLikes() != null ? post.getLikes() : 1) - 1, 0));
+	            postRepo.save(post);
+	            return ResponseEntity.ok("Post unliked");
+	        } else {
+	            // Like
+	            PostLike like = new PostLike(username, postId);
+	            likeRepo.save(like);
+	            post.setLikes((post.getLikes() != null ? post.getLikes() : 0) + 1);
+	            postRepo.save(post);
+	            return ResponseEntity.ok("Post liked");
+	        }
+
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error liking post: " + e.getMessage());
+	                .body("Error toggling like: " + e.getMessage());
 	    }
 	}
+
 	
 	@GetMapping("/getPostById/{postID}")
 	public LyricPost getPostByID(@PathVariable("postID") int postID) {
