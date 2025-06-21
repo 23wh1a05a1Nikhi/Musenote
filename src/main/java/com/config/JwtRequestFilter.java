@@ -32,10 +32,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     	    return;
     	}
     	String path = request.getRequestURI();
-    	if (path.equals("/UsersLogin") || path.equals("/addUser")) {
-    	    chain.doFilter(request, response); // Skip JWT validation
-    	    return;
-    	}
+    	if (path.equals("/UsersLogin") || path.equals("/addUser")
+    		    || path.equals("/sendOtp") || path.equals("/verifyOtp")) {
+    		    chain.doFilter(request, response); // Skip JWT validation
+    		    return;
+    		}
         final String authHeader = request.getHeader("Authorization");
 
         String username = null;

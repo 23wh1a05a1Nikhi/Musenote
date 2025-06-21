@@ -1,7 +1,9 @@
 package com.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dao.LyricPostRepository;
@@ -30,6 +33,7 @@ import com.util.JwtUtil;
 @CrossOrigin("http://localhost:3000")
 @RestController
 public class UserRegController {
+	Map<String, String> otpStore = new HashMap<>();
 	@Autowired
 	UserRegDao userDao;
 	
@@ -47,8 +51,34 @@ public class UserRegController {
 
 	@Autowired
 	private LyricPostRepository lyricPostRepository;
-
 	
+	@Autowired
+    private UserRegRepository userRegRepository;
+
+	@PostMapping("addUser")
+	public ResponseEntity<?> addUser(@RequestBody UserReg user) {
+	    try {
+	        System.out.println("Received user:");
+	        System.out.println("Username: " + user.getUserName());
+	        System.out.println("Email: " + user.getMail());
+
+	        // ✅ Check if username already exists
+	        Optional<UserReg> existingUser = userRegRepository.findById(user.getUserName());
+	        if (existingUser.isPresent()) {
+	            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");
+	        }
+
+	        UserReg savedUser = userDao.addUser(user);
+	        emailService.sendWelcomeEmail(user.getMail(), user.getUserName());
+
+	        return ResponseEntity.ok(savedUser);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("Registration failed: " + e.getMessage());
+	    }
+	}
+/*
 	@PostMapping("addUser")
 	public ResponseEntity<?> addUser(@RequestBody UserReg user) {
 	    try {
@@ -67,7 +97,7 @@ public class UserRegController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	            .body("Registration failed: " + e.getMessage());
 	    }
-	}
+	}*/
 
 
 	
@@ -95,8 +125,7 @@ public class UserRegController {
 	    }
 	}
 	
-	@Autowired
-    private UserRegRepository userRegRepository;
+	
 	@PutMapping("/updateBio")
     public ResponseEntity<String> updateBio(@RequestBody Map<String, String> body) {
         String username = body.get("username");
@@ -112,6 +141,53 @@ public class UserRegController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
+	@PostMapping("/sendOtp")
+	public ResponseEntity<String> sendOtp(@RequestParam String email) {
+	    try {
+	        // ✅ Check if email already exists
+	    	
+	        Optional<UserReg> userOptional = userRegRepository.findByMail(email);
+	        if (userOptional.isPresent()) {
+	            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already registered.");
+	        }
+
+	        String otp = String.format("%06d", new Random().nextInt(999999));
+	        otpStore.put(email, otp);
+	        emailService.sendOtpEmail(email, otp);
+	        return ResponseEntity.ok("OTP sent successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP");
+	    }
+	}
+	/*
+	@PostMapping("/sendOtp")
+	public ResponseEntity<String> sendOtp(@RequestParam String email) {
+		
+	    try {
+	   
+	        String otp = String.format("%06d", new Random().nextInt(999999));
+	        otpStore.put(email, otp);
+	        emailService.sendOtpEmail(email, otp);
+	        return ResponseEntity.ok("OTP sent successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP");
+	    }
+	}*/
+
+	@PostMapping("/verifyOtp")
+	public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> payload) {
+	    String email = payload.get("email");
+	    String enteredOtp = payload.get("otp");
+
+	    String storedOtp = otpStore.get(email);
+	    if (storedOtp != null && storedOtp.equals(enteredOtp)) {
+	        return ResponseEntity.ok(true);
+	    } else {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP");
+	    }
+	}
 	
 	@DeleteMapping("/deleteAccount/{username}")
 	@Transactional
