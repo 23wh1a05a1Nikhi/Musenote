@@ -13,6 +13,8 @@ import com.model.UserReg;
 public interface UserRegRepository extends JpaRepository<UserReg,String>{
 	@Query("from UserReg where userName = :name")
 	Optional<UserReg> findByName(@Param("name") String name);
+	@Query("from UserReg where mail = :mail")
+	Optional<UserReg> findByMail(@Param("mail") String mail);
 	
 	
 	
