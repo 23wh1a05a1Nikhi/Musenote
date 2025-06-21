@@ -44,7 +44,7 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(auth -> auth
 	            .requestMatchers("/UsersLogin", "/addUser", "/getPostsByGenre/**", "/getPostsByTags/**", "/getPostsByUser/**", "/getPostsByTitle/**", "/audio/**").permitAll()
 	            .requestMatchers("/addPost", "/getAllPosts", "/getUserByName/**", "/getPostById/**").authenticated()
-	            .requestMatchers("/likePost/**",  "/follow", "/unfollow", "/isFollowing/**", "/followCount/**", "/addPostWithAudio").authenticated()  
+	            .requestMatchers("/likePost/**",  "/follow", "/unfollow", "/isFollowing/**", "/followCount/**", "/addPostWithAudio", "/commentsByPost/**", "/addComment").authenticated()  
 	            .anyRequest().authenticated()
 	        )
 	        .sessionManagement(sess -> sess

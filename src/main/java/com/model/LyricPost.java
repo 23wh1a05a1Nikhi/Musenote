@@ -1,13 +1,19 @@
 package com.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class LyricPost {
@@ -22,9 +28,7 @@ public class LyricPost {
 	String tag2;
 	
 	@Column(name = "likes")
-	Integer likes = 0;
-
-	
+	Integer likes = 0;	
 	
 	@ManyToOne
 	@JoinColumn(name = "userName")
@@ -33,6 +37,11 @@ public class LyricPost {
 	
 	@Column(nullable = true)
 	private String audioFileName;
+	
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<Comment> comments = new ArrayList<>();
+
 	
 	public LyricPost() {
 		

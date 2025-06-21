@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -28,6 +29,11 @@ public class UserReg {
 	@JsonIgnore
 	@OneToMany(mappedBy = "userreg")
 	List<LyricPost> lyricList = new ArrayList<LyricPost>();
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<Comment> comments = new ArrayList<>();
+
 
 	public UserReg() {
 		
