@@ -15,6 +15,7 @@ public class LyricPost {
 	@Id@GeneratedValue
 	int postId;
 	String title;
+	@Column(columnDefinition = "TEXT")
 	String content;
 	String genre;
 	String tag1;
