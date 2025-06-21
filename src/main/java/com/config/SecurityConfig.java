@@ -66,7 +66,7 @@ public class SecurityConfig {
                     "/followCount/**",
                     "/addPostWithAudio",
                     "/commentsByPost/**",
-                    "/addComment"
+                    "/addComment/**"
                 ).authenticated()
                 .anyRequest().authenticated()
             )
