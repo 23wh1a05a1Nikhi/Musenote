@@ -146,18 +146,15 @@ public class LyricPostController {
 	    @RequestPart(value = "file", required = false) MultipartFile file,
 	    Principal principal
 	) throws IOException {
-	    // Convert raw JSON string to LyricPost object
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    LyricPost post = objectMapper.readValue(postJson, LyricPost.class);
 
-	    // Save audio file if present
 	    if (file != null && !file.isEmpty()) {
 	        String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
 	        Path uploadPath = Paths.get("uploads/" + fileName);
 	        Files.write(uploadPath, file.getBytes());
 	        post.setAudioFileName(fileName);
 	    }
-	    // ✅ Associate user with the post
 	    String username = principal.getName();
 	    UserReg user = userRepo.findByName(username)
 	            .orElseThrow(() -> new RuntimeException("User not found"));

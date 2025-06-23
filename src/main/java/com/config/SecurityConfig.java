@@ -43,33 +43,46 @@ public class SecurityConfig {
             .cors(withDefaults())
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/UsersLogin",
-                    "/addUser",
-                    "/sendOtp",
-                    "/verifyOtp",
-                    "/getPostsByGenre/**",
-                    "/getPostsByTags/**",
-                    "/getPostsByUser/**",
-                    "/getPostsByTitle/**",
-                    "/audio/**"
-                ).permitAll()
-                .requestMatchers(
-                    "/addPost",
-                    "/getAllPosts",
-                    "/getUserByName/**",
-                    "/getPostById/**",
-                    "/likePost/**",
-                    "/follow",
-                    "/unfollow",
-                    "/isFollowing/**",
-                    "/followCount/**",
-                    "/addPostWithAudio",
-                    "/commentsByPost/**",
-                    "/addComment/**"
-                ).authenticated()
-                .anyRequest().authenticated()
-            )
+            	    .requestMatchers(
+            	        // WebSocket handshake + SockJS fallback URLs
+            	        "/ws/**",                   // ✅ required for SockJS
+            	        "/topic/**",                // ✅ broker topics (optional if using)
+            	        "/app/**",                  // ✅ destination prefix
+            	        "/chat/**",  
+            	        "/api/chat/**",
+
+            	        // Public REST endpoints
+            	        "/UsersLogin",
+            	        "/addUser",
+            	        "/sendOtp",
+            	        "/verifyOtp",
+            	        "/getPostsByGenre/**",
+            	        "/getPostsByTags/**",
+            	        "/getPostsByUser/**",
+            	        "/getPostsByTitle/**",
+            	        "/audio/**"
+            	    ).permitAll()
+
+            	    // Authenticated routes
+            	    .requestMatchers(
+            	        "/addPost",
+            	        "/getAllPosts",
+            	        "/getUserByName/**",
+            	        "/getPostById/**",
+            	        "/likePost/**",
+            	        "/follow",
+            	        "/unfollow",
+            	        "/isFollowing/**",
+            	        "/followCount/**",
+            	        "/addPostWithAudio",
+            	        "/commentsByPost/**",
+            	        "/addComment/**",
+            	        "/api/chat/**"
+            	    ).authenticated()
+
+            	    .anyRequest().authenticated()
+            	)
+
             .sessionManagement(sess -> sess
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
