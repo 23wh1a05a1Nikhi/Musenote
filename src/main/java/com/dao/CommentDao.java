@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.model.Comment;
 import com.model.LyricPost;
-import com.dao.CommentRepository;
 
 @Service
 public class CommentDao {
